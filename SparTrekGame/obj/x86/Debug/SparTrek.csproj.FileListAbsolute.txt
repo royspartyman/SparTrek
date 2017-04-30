@@ -1,6 +1,0 @@
-C:\Users\perrym23\Desktop\471 Project\SparTrekGame\bin\x86\Debug\ShapeBlaster_Part2.exe
-C:\Users\perrym23\Desktop\471 Project\SparTrekGame\bin\x86\Debug\ShapeBlaster_Part2.pdb
-C:\Users\perrym23\Desktop\471 Project\SparTrekGame\obj\x86\Debug\SparTrek.csprojResolveAssemblyReference.cache
-C:\Users\perrym23\Desktop\471 Project\SparTrekGame\obj\x86\Debug\Microsoft.Xna.Framework.RuntimeProfile.txt
-C:\Users\perrym23\Desktop\471 Project\SparTrekGame\obj\x86\Debug\ShapeBlaster_Part2.exe
-C:\Users\perrym23\Desktop\471 Project\SparTrekGame\obj\x86\Debug\ShapeBlaster_Part2.pdb
