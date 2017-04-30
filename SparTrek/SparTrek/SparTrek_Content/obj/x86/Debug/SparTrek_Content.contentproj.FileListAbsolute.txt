@@ -1,0 +1,3 @@
+C:\Users\perrym23\Desktop\ShapeBlaster_AllParts-3\ShapeBlaster_Part2\ShapeBlaster_Part2Content\obj\x86\Debug\SparTrek_Content.contentprojResolveAssemblyReference.cache
+C:\Users\perrym23\Desktop\ShapeBlaster_AllParts-3\SparTrek\ShapeBlaster_Part2Content\obj\x86\Debug\SparTrek_Content.contentprojResolveAssemblyReference.cache
+C:\Users\perrym23\Desktop\SparTrek\SparTrek\SparTrek_Content\obj\x86\Debug\SparTrek_Content.contentprojResolveAssemblyReference.cache
