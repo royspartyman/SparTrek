@@ -1,8 +1,4 @@
-﻿//---------------------------------------------------------------------------------
-// Written by Michael Hoffman
-// Find the full tutorial at: http://gamedev.tutsplus.com/series/vector-shooter-xna/
-//----------------------------------------------------------------------------------
-
+﻿
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,91 +8,151 @@ using Microsoft.Xna.Framework;
 
 namespace ShapeBlaster
 {
-	class PlayerShip : Entity
-	{
-		private static PlayerShip instance;
-		public static PlayerShip Instance 
-		{
-			get
-			{
-				if (instance == null)
-					instance = new PlayerShip();
+    class PlayerShip : Entity
+    {
+        private static PlayerShip instance;
+        public static PlayerShip Instance
+        {
+            get
+            {
+                if (instance == null)
+                    instance = new PlayerShip();
 
-				return instance;
-			}
-		}
+                return instance;
+            }
+        }
 
-		const int cooldownFrames = 6;
-		int cooldownRemaining = 0;
+        const int cooldownFrames = 6;
+        int cooldownRemaining = 0;
 
-		int framesUntilRespawn = 0;
-		public bool IsDead { get { return framesUntilRespawn > 0; } }
+        int framesUntilRespawn = 0;
+        public bool IsDead { get { return framesUntilRespawn > 0; } }
 
-		static Random rand = new Random();
+        static Random rand = new Random();
 
-		private PlayerShip()
-		{
-			image = Art.Player;
-			Position = GameRoot.ScreenSize / 2;
-			Radius = 10;
-		}
+        private PlayerShip()
+        {
+            image = Art.Player;
+            Position = GameRoot.ScreenSize / 2;
+            Radius = 10;
+        }
 
-		public override void Update()
-		{
-			if (IsDead)
-			{
-				if (--framesUntilRespawn == 0)
-				{
-					if (PlayerStatus.Lives == 0)
-					{
-						PlayerStatus.Reset();
-						Position = GameRoot.ScreenSize / 2;
-					}
-				}				
-				return;
-			}
-			
-			var aim = Input.GetAimDirection();
-			if (aim.LengthSquared() > 0 && cooldownRemaining <= 0)
-			{
-				cooldownRemaining = cooldownFrames;
-				float aimAngle = aim.ToAngle();
-				Quaternion aimQuat = Quaternion.CreateFromYawPitchRoll(0, 0, aimAngle);
+        public override void Update()
+        {
+            if (IsDead)
+            {
+                if (--framesUntilRespawn == 0)
+                {
+                    if (PlayerStatus.Lives == 0)
+                    {
+                        PlayerStatus.Reset();
+                        Position = GameRoot.ScreenSize / 2;
+                    }
+                }
+                return;
+            }
 
-				float randomSpread = rand.NextFloat(-0.04f, 0.04f) + rand.NextFloat(-0.04f, 0.04f);
-				Vector2 vel = MathUtil.FromPolar(aimAngle + randomSpread, 11f);
+            var aim = Input.GetAimDirection();
+            if (aim.LengthSquared() > 0 && cooldownRemaining <= 0)
+            {
+                cooldownRemaining = cooldownFrames;
+                float aimAngle = aim.ToAngle();
+                Quaternion aimQuat = Quaternion.CreateFromYawPitchRoll(0, 0, aimAngle);
 
-				Vector2 offset = Vector2.Transform(new Vector2(35, -8), aimQuat);
-				EntityManager.Add(new Bullet(Position + offset, vel));
+                float randomSpread = rand.NextFloat(-0.04f, 0.04f) + rand.NextFloat(-0.04f, 0.04f);
+                Vector2 vel = MathUtil.FromPolar(aimAngle + randomSpread, 11f);
 
-				offset = Vector2.Transform(new Vector2(35, 8), aimQuat);
-				EntityManager.Add(new Bullet(Position + offset, vel));
+                Vector2 offset = Vector2.Transform(new Vector2(35, -8), aimQuat);
+                EntityManager.Add(new Bullet(Position + offset, vel));
 
-				Sound.Shot.Play(0.2f, rand.NextFloat(-0.2f, 0.2f), 0);
-			}
+                offset = Vector2.Transform(new Vector2(35, 8), aimQuat);
+                EntityManager.Add(new Bullet(Position + offset, vel));
 
-			if (cooldownRemaining > 0)
-				cooldownRemaining--;
+                Sound.Shot.Play(0.2f, rand.NextFloat(-0.2f, 0.2f), 0);
+            }
 
-			const float speed = 8;
-			Velocity = speed * Input.GetMovementDirection();
-			Position += Velocity;
-			Position = Vector2.Clamp(Position, Size / 2, GameRoot.ScreenSize - Size / 2);
-			
-			if (Velocity.LengthSquared() > 0)
-				Orientation = Velocity.ToAngle();
-		}
+            if (cooldownRemaining > 0)
+                cooldownRemaining--;
 
-		public override void Draw(SpriteBatch spriteBatch)
-		{
-			if (!IsDead)
-				base.Draw(spriteBatch);
-		}
+            const float speed = 8;
+            Velocity = speed * Input.GetMovementDirection();
+            Position += Velocity;
+            Position = Vector2.Clamp(Position, Size / 2, GameRoot.ScreenSize - Size / 2);
 
-		public void Kill()
-		{
-			PlayerStatus.RemoveLife();
-			framesUntilRespawn = PlayerStatus.IsGameOver ? 300 : 120;
-		}
-	}
+            if (Velocity.LengthSquared() > 0)
+                Orientation = Velocity.ToAngle();
+
+            MakeExhaustFire();
+        }
+
+        public override void Draw(SpriteBatch spriteBatch)
+        {
+            if (!IsDead)
+                base.Draw(spriteBatch);
+        }
+
+        public void Kill()
+        {
+            PlayerStatus.RemoveLife();
+            framesUntilRespawn = PlayerStatus.IsGameOver ? 300 : 120;
+
+            Color yellow = new Color(0.8f, 0.8f, 0.4f);
+
+            for (int i = 0; i < 1200; i++)
+            {
+                float speed = 18f * (1f - 1 / rand.NextFloat(1f, 10f));
+                Color color = Color.Lerp(Color.White, yellow, rand.NextFloat(0, 1));
+                var state = new ParticleState()
+                {
+                    Velocity = rand.NextVector2(speed, speed),
+                    Type = ParticleType.None,
+                    LengthMultiplier = 1
+                };
+
+                GameRoot.ParticleManager.CreateParticle(Art.LineParticle, Position, color, 190, Vector2.One * 1.5f, state);
+            }
+        }
+
+        private void MakeExhaustFire()
+        {
+            if (Velocity.LengthSquared() > 0.1f)
+            {
+                // set up some variables
+                Orientation = Velocity.ToAngle();
+                Quaternion rot = Quaternion.CreateFromYawPitchRoll(0f, 0f, Orientation);
+
+                double t = GameRoot.GameTime.TotalGameTime.TotalSeconds;
+                // The primary velocity of the particles is 3 pixels/frame in the direction opposite to which the ship is travelling.
+                Vector2 baseVel = Velocity.ScaleTo(-3);
+                // Calculate the sideways velocity for the two side streams. The direction is perpendicular to the ship's velocity and the
+                // magnitude varies sinusoidally.
+                Vector2 perpVel = new Vector2(baseVel.Y, -baseVel.X) * (0.6f * (float)Math.Sin(t * 10));
+                Color sideColor = new Color(200, 38, 9);    // deep red
+                Color midColor = new Color(255, 187, 30);   // orange-yellow
+                Vector2 pos = Position + Vector2.Transform(new Vector2(-25, 0), rot);   // position of the ship's exhaust pipe.
+                const float alpha = 0.7f;
+
+                // middle particle stream
+                Vector2 velMid = baseVel + rand.NextVector2(0, 1);
+                GameRoot.ParticleManager.CreateParticle(Art.LineParticle, pos, Color.White * alpha, 60f, new Vector2(0.5f, 1),
+                    new ParticleState(velMid, ParticleType.Enemy));
+                GameRoot.ParticleManager.CreateParticle(Art.LineParticle, pos, midColor * alpha, 60f, new Vector2(0.5f, 1),
+                    new ParticleState(velMid, ParticleType.Enemy));
+
+                // side particle streams
+                Vector2 vel1 = baseVel + perpVel + rand.NextVector2(0, 0.3f);
+                Vector2 vel2 = baseVel - perpVel + rand.NextVector2(0, 0.3f);
+                GameRoot.ParticleManager.CreateParticle(Art.LineParticle, pos, Color.White * alpha, 60f, new Vector2(0.5f, 1),
+                    new ParticleState(vel1, ParticleType.Enemy));
+                GameRoot.ParticleManager.CreateParticle(Art.LineParticle, pos, Color.White * alpha, 60f, new Vector2(0.5f, 1),
+                    new ParticleState(vel2, ParticleType.Enemy));
+
+                GameRoot.ParticleManager.CreateParticle(Art.LineParticle, pos, sideColor * alpha, 60f, new Vector2(0.5f, 1),
+                    new ParticleState(vel1, ParticleType.Enemy));
+                GameRoot.ParticleManager.CreateParticle(Art.LineParticle, pos, sideColor * alpha, 60f, new Vector2(0.5f, 1),
+                    new ParticleState(vel2, ParticleType.Enemy));
+            }
+        }
+    }
+
 }

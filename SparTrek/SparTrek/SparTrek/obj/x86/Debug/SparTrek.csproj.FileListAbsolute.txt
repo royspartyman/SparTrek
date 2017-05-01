@@ -105,3 +105,4 @@ C:\Users\perrym23\Desktop\SparTrek\SparTrek\SparTrek\obj\x86\Debug\SparTrek.pdb
 C:\Users\perrym23\Desktop\SparTrek\SparTrek\SparTrek\bin\x86\Debug\Content\Art\STAR.xnb
 C:\Users\perrym23\Desktop\SparTrek\SparTrek\SparTrek\bin\x86\Debug\Content\Sound\MenuMusic.xnb
 C:\Users\perrym23\Desktop\SparTrek\SparTrek\SparTrek\bin\x86\Debug\Content\Sound\MenuMusic.wma
+C:\Users\perrym23\Desktop\SparTrek\SparTrek\SparTrek\bin\x86\Debug\Content\Art\Glow.xnb

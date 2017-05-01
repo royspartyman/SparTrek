@@ -1,9 +1,4 @@
-﻿//---------------------------------------------------------------------------------
-// Written by Michael Hoffman
-// Find the full tutorial at: http://gamedev.tutsplus.com/series/vector-shooter-xna/
-//----------------------------------------------------------------------------------
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Xna.Framework;
@@ -17,13 +12,13 @@ using SparTrek;
 
 namespace ShapeBlaster
 {
-	public class GameRoot : Microsoft.Xna.Framework.Game
-	{
-		// some helpful static properties
-		public static GameRoot Instance { get; private set; }
-		public static Viewport Viewport { get { return Instance.GraphicsDevice.Viewport; } }
-		public static Vector2 ScreenSize { get { return new Vector2(Viewport.Width, Viewport.Height); } }
-		public static GameTime GameTime { get; private set; }
+    public class GameRoot : Microsoft.Xna.Framework.Game
+    {
+        // some helpful static properties
+        public static GameRoot Instance { get; private set; }
+        public static Viewport Viewport { get { return Instance.GraphicsDevice.Viewport; } }
+        public static Vector2 ScreenSize { get { return new Vector2(Viewport.Width, Viewport.Height); } }
+        public static GameTime GameTime { get; private set; }
 
         private Vector2 startButtonPosition;
         private Vector2 exitButtonPosition;
@@ -34,35 +29,37 @@ namespace ShapeBlaster
         private MouseState mouseState;
         private MouseState previousMouseState;
         private Texture2D star;
-        private StarField starField; 
+        private StarField starField;
 
-        enum GameState { MENU, PLAYING, PLAYERCHOICE, JOKE};
+        enum GameState { MENU, PLAYING, PLAYERCHOICE, JOKE };
 
         private GameState gamestate = GameState.MENU;
 
-		GraphicsDeviceManager graphics;
-		SpriteBatch spriteBatch;
+        GraphicsDeviceManager graphics;
+        SpriteBatch spriteBatch;
 
-		public GameRoot()
-		{
-			Instance = this;
-			graphics = new GraphicsDeviceManager(this);
-			Content.RootDirectory = "Content";
+        public static ParticleManager<ParticleState> ParticleManager { get; private set; }
+
+        public GameRoot()
+        {
+            Instance = this;
+            graphics = new GraphicsDeviceManager(this);
+            Content.RootDirectory = "Content";
 
             graphics.PreferredBackBufferWidth = 800;
-			graphics.PreferredBackBufferHeight = 600;
+            graphics.PreferredBackBufferHeight = 600;
 
             graphics.IsFullScreen = true;
-		}
+        }
 
-		protected override void Initialize()
-		{
-			base.Initialize();
+        protected override void Initialize()
+        {
+            base.Initialize();
 
-			EntityManager.Add(PlayerShip.Instance);
+            EntityManager.Add(PlayerShip.Instance);
 
-			MediaPlayer.IsRepeating = true;
-			MediaPlayer.Play(Sound.MenuMusic);
+            MediaPlayer.IsRepeating = true;
+            MediaPlayer.Play(Sound.MenuMusic);
 
             startButtonPosition = new Vector2((GraphicsDevice.Viewport.Width / 2) - 50, 200);
             exitButtonPosition = new Vector2((GraphicsDevice.Viewport.Width / 2) - 50, 250);
@@ -82,21 +79,23 @@ namespace ShapeBlaster
                 new Rectangle(0, 0, 2, 2)
             );
 
-		}
+            ParticleManager = new ParticleManager<ParticleState>(1024 * 20, ParticleState.UpdateParticle);
 
-		protected override void LoadContent()
-		{
-			spriteBatch = new SpriteBatch(GraphicsDevice);
-			Sound.Load(Content);
+        }
+
+        protected override void LoadContent()
+        {
+            spriteBatch = new SpriteBatch(GraphicsDevice);
+            Sound.Load(Content);
             Art.Load(Content);
             Art.LoadMenu(Content);
             star = Art.Star;
-		}
+        }
 
-		protected override void Update(GameTime gameTime)
-		{
-			GameTime = gameTime;
-			Input.Update();
+        protected override void Update(GameTime gameTime)
+        {
+            GameTime = gameTime;
+            Input.Update();
 
             if (gamestate == GameState.MENU)
             {
@@ -126,11 +125,12 @@ namespace ShapeBlaster
                     MediaPlayer.Stop();
                     this.Exit();
                 }
-           
+
 
                 EntityManager.Update();
                 EnemySpawner.Update();
                 PlayerStatus.Update();
+                ParticleManager.Update();
             }
             else if (gamestate == GameState.PLAYERCHOICE)
             {
@@ -168,12 +168,12 @@ namespace ShapeBlaster
                 previousMouseState = mouseState;
             }
 
-			base.Update(gameTime);
-		}
+            base.Update(gameTime);
+        }
 
 
-		protected override void Draw(GameTime gameTime)
-		{
+        protected override void Draw(GameTime gameTime)
+        {
 
             if (gamestate == GameState.PLAYING)
             {
@@ -182,7 +182,12 @@ namespace ShapeBlaster
                 // Draw entities. Sort by texture for better batching.
                 spriteBatch.Begin(SpriteSortMode.Texture, BlendState.Additive);
                 EntityManager.Draw(spriteBatch);
-                starField.Draw(spriteBatch); 
+                starField.Draw(spriteBatch);
+                spriteBatch.End();
+
+                // Draw explosions
+                spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive);
+                ParticleManager.Draw(spriteBatch);
                 spriteBatch.End();
 
                 // Draw user interface
@@ -215,7 +220,7 @@ namespace ShapeBlaster
 
                 // Draw user interface
                 spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive);
-                starField.Draw(spriteBatch); 
+                starField.Draw(spriteBatch);
                 spriteBatch.Draw(Art.Pointer, Input.MousePosition, Color.White);
                 spriteBatch.Draw(Art.StartButton, startButtonPosition, Color.White);
                 spriteBatch.Draw(Art.ExitButton, exitButtonPosition, Color.White);
@@ -228,7 +233,7 @@ namespace ShapeBlaster
 
                 // Draw user interface
                 spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive);
-                starField.Draw(spriteBatch); 
+                starField.Draw(spriteBatch);
                 spriteBatch.Draw(Art.Pointer, Input.MousePosition, Color.White);
                 spriteBatch.Draw(Art.Player, playerOneButtonPosition, Color.White);
                 spriteBatch.Draw(Art.Seeker, playerTwoButtonPosition, Color.White);
@@ -247,7 +252,7 @@ namespace ShapeBlaster
 
                 // Draw user interface
                 spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive);
-                starField.Draw(spriteBatch); 
+                starField.Draw(spriteBatch);
                 spriteBatch.Draw(Art.Pointer, Input.MousePosition, Color.White);
                 spriteBatch.Draw(Art.Player, playerOneButtonPosition, Color.White);
                 spriteBatch.Draw(Art.Seeker, playerTwoButtonPosition, Color.White);
@@ -260,8 +265,8 @@ namespace ShapeBlaster
                 spriteBatch.End();
             }
             starField.Update(gameTime);
-			base.Draw(gameTime);
-		}
+            base.Draw(gameTime);
+        }
 
         void MouseClicked(int x, int y)
         {
@@ -284,7 +289,7 @@ namespace ShapeBlaster
                 else if (mouseClickRect.Intersects(exitButtonRect)) //player clicked exit button
                 {
                     MediaPlayer.Stop();
-                   this.Exit();
+                    this.Exit();
                 }
             }
 
@@ -309,10 +314,12 @@ namespace ShapeBlaster
             }
         }
 
-		private void DrawRightAlignedString(string text, float y)
-		{
-			var textWidth = Art.Font.MeasureString(text).X;
-			spriteBatch.DrawString(Art.Font, text, new Vector2(ScreenSize.X - textWidth - 5, y), Color.White);
-		}
-	}
+
+        private void DrawRightAlignedString(string text, float y)
+        {
+            var textWidth = Art.Font.MeasureString(text).X;
+            spriteBatch.DrawString(Art.Font, text, new Vector2(ScreenSize.X - textWidth - 5, y), Color.White);
+        }
+    }
+
 }

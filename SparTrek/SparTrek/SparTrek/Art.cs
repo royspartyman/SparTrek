@@ -1,8 +1,4 @@
-﻿//---------------------------------------------------------------------------------
-// Written by Michael Hoffman
-// Find the full tutorial at: http://gamedev.tutsplus.com/series/vector-shooter-xna/
-//----------------------------------------------------------------------------------
-
+﻿
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,6 +18,7 @@ namespace ShapeBlaster
         public static Texture2D Pointer { get; private set; }
         public static Texture2D StartButton { get; private set; }
         public static Texture2D ExitButton { get; private set; }
+        public static Texture2D LineParticle { get; private set; }
 
 		public static SpriteFont Font { get; private set; }
 
@@ -33,7 +30,7 @@ namespace ShapeBlaster
 			Wanderer = content.Load<Texture2D>("Art/Wanderer");
 			Bullet = content.Load<Texture2D>("Art/Bullet");
 			Pointer = content.Load<Texture2D>("Art/Pointer");
-
+            LineParticle = content.Load<Texture2D>("Art/Glow");
 			Font = content.Load<SpriteFont>("Font");
 		}
 

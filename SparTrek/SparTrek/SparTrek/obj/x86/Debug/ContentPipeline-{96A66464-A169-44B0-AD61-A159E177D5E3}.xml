@@ -282,6 +282,15 @@
       <Extra>C:\Users\perrym23\Desktop\SparTrek\SparTrek\SparTrek\bin\x86\Debug\Content\Sound\MenuMusic.wma</Extra>
       <Time>2017-04-30T15:02:07.4927377-07:00</Time>
     </Item>
+    <Item>
+      <Source>Art\Glow.png</Source>
+      <Name>Art\Glow</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\perrym23\Desktop\SparTrek\SparTrek\SparTrek\bin\x86\Debug\Content\Art\Glow.xnb</Output>
+      <Time>2017-04-30T17:57:11.6968-07:00</Time>
+    </Item>
     <BuildSuccessful>true</BuildSuccessful>
     <Settings>
       <ContentProjectGUID>{96A66464-A169-44B0-AD61-A159E177D5E3}</ContentProjectGUID>

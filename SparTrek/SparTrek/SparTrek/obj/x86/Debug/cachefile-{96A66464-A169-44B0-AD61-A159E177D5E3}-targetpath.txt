@@ -31,3 +31,4 @@ Content\Sound\Music.wma
 Content\Art\STAR.xnb
 Content\Sound\MenuMusic.xnb
 Content\Sound\MenuMusic.wma
+Content\Art\Glow.xnb
